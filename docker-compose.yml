@@ -1,0 +1,67 @@
+version: '3.4'
+
+services:
+
+  #kafka.data:
+  #  image: redis:alpine
+
+  #rabbitmq:
+  #  image: rabbitmq:3-management-alpine
+  order-reactui:
+    build:
+      context: .
+      dockerfile: src/React-web-ui/Dockerfile
+    ports:
+      - "3000:3000"
+  order-api:
+    build:
+      context: .
+      dockerfile: src/Api/Dockerfile   
+    ports:
+     - "5000:5000"
+    extra_hosts:
+       - "broker:192.168.65.2" #https://biancatamayo.me/blog/2017/11/03/docker-add-host-ip/
+    #depends_on:
+    #  - kafka.data
+  
+  hostedservice-mixing:
+    build:
+      context: .
+      dockerfile: src/Services/Service.Mixing/Dockerfile   
+    ports:
+     - "5001:5001"
+    extra_hosts:
+       - "broker:192.168.65.2" #https://biancatamayo.me/blog/2017/11/03/docker-add-host-ip/
+  
+  hostedservice-baking:
+    build:
+      context: .
+      dockerfile: src/Services/Service.Baking/Dockerfile   
+    ports:
+     - "5002:5002"
+    extra_hosts:
+       - "broker:192.168.65.2" #https://biancatamayo.me/blog/2017/11/03/docker-add-host-ip/
+    #depends_on:
+    #  - kafka.data
+
+  hostedservice-decorating:
+    build:
+      context: .
+      dockerfile: src/Services/Service.Decorating/Dockerfile   
+    ports:
+     - "5003:5003"
+    extra_hosts:
+       - "broker:192.168.65.2" #https://biancatamayo.me/blog/2017/11/03/docker-add-host-ip/
+    #depends_on:
+    #  - kafka.data
+  
+  hostedservice-packaging:
+    build:
+      context: .
+      dockerfile: src/Services/Service.Packaging/Dockerfile   
+    ports:
+     - "5004:5004"
+    extra_hosts:
+       - "broker:192.168.65.2" #https://biancatamayo.me/blog/2017/11/03/docker-add-host-ip/
+    #depends_on:
+    #  - kafka.data

@@ -42,7 +42,7 @@ namespace SignalRDemo.Hubs{
             string topicName = httpContext.Request.Query["topic"];
             ConsumerConfig config = new ConsumerConfig(){
                 GroupId = consumerGroupName,
-                BootstrapServers="localhost:9092",
+                BootstrapServers="broker:9092",
                 ClientId=context.ConnectionId
             };
             return new SignalRClient(){ ConsumerConfig = config,Topic=topicName,ConsumerGroup=consumerGroupName,ConnectionId=context.ConnectionId};
