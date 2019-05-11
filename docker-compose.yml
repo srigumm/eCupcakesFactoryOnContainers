@@ -7,6 +7,24 @@ services:
 
   #rabbitmq:
   #  image: rabbitmq:3-management-alpine
+
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+     - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: test
+      
+  kafka-mongo-sink-connector:
+    build:
+      context: .
+      dockerfile: src/kafka-mongodb-connector/Dockerfile   
+    extra_hosts:
+       - "broker:192.168.65.2"
+    depends_on:
+      - mongo
+    
   order-reactui:
     build:
       context: .
