@@ -1,0 +1,96 @@
+version: '3.4'
+
+services:
+  connect:
+    image: confluentinc/kafka-connect-datagen:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    hostname: connect
+    container_name: connect
+    # depends_on:
+    #   - zookeeper
+    #   - broker
+    #   - schema-registry
+    ports:
+      - "8083:8083"
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: '192.168.65.2:9092'
+      CONNECT_REST_ADVERTISED_HOST_NAME: connect
+      CONNECT_REST_PORT: 8083
+      CONNECT_GROUP_ID: compose-connect-group
+      CONNECT_CONFIG_STORAGE_TOPIC: docker-connect-configs
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_FLUSH_INTERVAL_MS: 10000
+      CONNECT_OFFSET_STORAGE_TOPIC: docker-connect-offsets
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_TOPIC: docker-connect-status
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.storage.StringConverter
+      CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://192.168.65.2:8081
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_ZOOKEEPER_CONNECT: '192.168.65.2:2181'
+      # Assumes image is based on confluentinc/kafka-connect-datagen:latest which is pulling 5.1.1 Connect image
+      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.2.1.jar
+      CONNECT_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
+      CONNECT_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
+      CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
+      CONNECT_LOG4J_LOGGERS: org.apache.zookeeper=ERROR,org.I0Itec.zkclient=ERROR,org.reflections=ERROR
+    networks:
+      - my-mongo-cluster
+  mongo_one:
+    container_name: mongo1
+    image: mongo
+    command: mongod --replSet rs0
+    ports:
+     - 27017:27017
+    networks:
+      - my-mongo-cluster
+  mongo_two:
+    container_name: mongo2
+    image: mongo
+    command: mongod --replSet rs0
+    ports:
+     - 30002:27017
+    networks:
+      - my-mongo-cluster
+  mongo_three:
+    container_name: mongo3
+    image: mongo
+    command: mongod --replSet rs0
+    ports:
+     - 30003:27017
+    networks:
+      - my-mongo-cluster
+  mongosetup: #setup to create a replicate set with the above mongo nodes.
+    image: mongo
+    links:
+      - mongo_one:mongo1
+      - mongo_two:mongo2
+      - mongo_three:mongo3
+    command: RUN apt-get update && apt-get install -y iputils-ping
+    volumes:
+      - ./scripts:/scripts
+    depends_on:
+      - mongo_one
+      - mongo_two
+      - mongo_three
+    networks:
+      - my-mongo-cluster
+    entrypoint: [ "/scripts/mongoclustersetup.sh" ]
+  connectorsetup:
+    image: mongo #Any image is fine.
+    depends_on:
+      - mongosetup
+      - connect
+    command: RUN apt-get update && apt-get install -y iputils-ping
+    volumes:
+      - ./scripts:/scripts
+    networks:
+      - my-mongo-cluster
+    entrypoint: [ "/scripts/cdcsetup.sh" ]
+
+networks:
+  my-mongo-cluster: 
