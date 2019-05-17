@@ -22,7 +22,11 @@ curl -i -X POST -H 'Accept:application/json' -H  'Content-Type:application/json'
       "connector.class": "io.debezium.connector.mongodb.MongoDbConnector",
       "mongodb.hosts": "rs0/mongo1:27017",
       "mongodb.name": "rawmaterial",
-      "database.whitelist": "inventory"
+      "database.whitelist": "inventory",
+      "key.converter":"org.apache.kafka.connect.storage.StringConverter",
+      "key.converter.schemas.enable":"false",
+      "value.converter":"org.apache.kafka.connect.storage.StringConverter",
+      "value.converter.schemas.enable":"false"
     }
 }
 

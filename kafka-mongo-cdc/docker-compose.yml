@@ -80,6 +80,17 @@ services:
     networks:
       - my-mongo-cluster
     entrypoint: [ "/scripts/mongoclustersetup.sh" ]
+  mongo-seed: #seed some test data
+    build: ./mongo-seed-data
+    restart: on-failure
+    links:
+      - mongo_one
+    depends_on:
+      - mongo_one
+      - mongo_two
+      - mongo_three
+    networks:
+      - my-mongo-cluster
   connectorsetup:
     image: mongo #Any image is fine.
     depends_on:
