@@ -7,7 +7,7 @@ import Bake from "./pages/bake";
 import Login from "./pages/login";
 import Decorate from "./pages/decorate";
 import Package from "./pages/package";
-
+import CreateOrderRequest from "./pages/createorderrequest"
 const Routes = () => (
   <Switch>
     <Route exact path="/" component={Login} />
@@ -16,6 +16,7 @@ const Routes = () => (
     <Route path="/decorator" component={Decorate} />
     <Route path="/packaging" component={Package} />
     <Route path="/dashboard" component={Landing} />
+    <Route path="/create" component={CreateOrderRequest} />
   </Switch>
 );
 

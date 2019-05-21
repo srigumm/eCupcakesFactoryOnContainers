@@ -17,7 +17,7 @@ class Bake extends Component {
 
     componentDidMount = () => {
         const hubConnection = new SignalR.HubConnectionBuilder()
-            .withUrl("http://localhost:5001/ordermonitorhub?consumergroup=bostonbeach&topic=readytobake")
+            .withUrl("http://localhost:5002/ordermonitorhub?consumergroup=bostonbeach&topic=readytobake")
             .configureLogging(SignalR.LogLevel.Information)
             .build();
         
@@ -50,7 +50,7 @@ class Bake extends Component {
         
         //2
         console.log("Submitting baked order -"+JSON.stringify(payload));
-        this.props.submitMixedOrder(payload);
+        this.props.submitBakedOrder(payload);
         
         //3
         var newArray = this.state.messages.filter( el => el.id != orderObj.id )
@@ -73,10 +73,11 @@ class Bake extends Component {
     render() {
         return (
             <div style={{"textAlign":"left"}}>
+                <h1 style={{"color":"green"}}>Hey Baker </h1>
                 {this.state.messages.length ? <b>New orders to be baked: <b style={{"fontSize":"50px"}}> {this.state.messages.length}</b></b> :""}
                 <br/>
                 {this.state.messages.length ? 
-                        <DisplayOrders list={this.state.messages} submitBakedOrder={this.handleBakedOrderClick} reportFailure = {this.handleFailureOrderClick} process="Bake" /> : "No new orders"}
+                        <DisplayOrders list={this.state.messages} submitOrder={this.handleBakedOrderClick} reportFailure = {this.handleFailureOrderClick} process="Bake" /> : "No new orders"}
             </div>
         );
     }

@@ -13,7 +13,8 @@ const userroles = [
                     {"id":'baker',"value":"baker"},
                     {"id":'decorator',"value":"decorator"},
                     {"id":'packaging',"value":"packaging team"},
-                    {"id":'dashboard',"value":"Admin - Dashboard"}
+                    {"id":'dashboard',"value":"Admin - Dashboard"},
+                    {"id":'create',"value":"Customer"}
                 ];
 
 const styles = {

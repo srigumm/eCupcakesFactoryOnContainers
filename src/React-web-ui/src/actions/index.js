@@ -7,18 +7,15 @@ export const submitUserOrderRequest = ({ Id, Flavour,Size, Quantity }) => {
 }  
   const request = axios.post(
       "http://localhost:5000/api/v1/order",
-      {
-        "Order":
-        {
-          Id,
-          Flavour,
-          Size,
-          Quantity
-        }
-      },
+      {"Order":{
+        Id,
+        Flavour,
+        Size,
+        Quantity
+      }},
       {headers: headers}
     ).catch(err =>{console.log("Error occured during POST request:",err);throw err;});
-  
+
     return {
       type: Actions.Submit_User_Order,
       payload: request

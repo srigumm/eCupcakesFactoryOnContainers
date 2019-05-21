@@ -73,10 +73,11 @@ class Mixer extends Component {
     render() {
         return (
             <div style={{"textAlign":"left"}}>
+                <h1 style={{"color":"orange"}}>Hey Mixer </h1>
                 {this.state.messages.length ? <b>New orders to be mixed: <b style={{"fontSize":"50px"}}> {this.state.messages.length}</b></b> :""}
                 <br/>
                 {this.state.messages.length ? 
-                        <DisplayOrders list={this.state.messages} submitMixedOrder={this.handleMixedOrderClick} process="Mix" reportFailure = {this.handleFailureOrderClick} /> : "No new orders"}
+                        <DisplayOrders list={this.state.messages} submitOrder={this.handleMixedOrderClick} process="Mix" reportFailure = {this.handleFailureOrderClick} /> : "No new orders"}
             </div>
         );
     }

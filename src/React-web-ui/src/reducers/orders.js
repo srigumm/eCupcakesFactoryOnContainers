@@ -19,7 +19,7 @@ const orderReducer = (state = initialState, action) => {
     case Constants.Mixed_Order:
       return {...state,ReadyToBakeOrders:[...state.ReadyToBakeOrders,action.payload.data]};
     case Constants.Decorated_Order:
-      return {...state,RadyToBoxOrders:[...state.RadyToBoxOrders,action.payload.data]};
+      return {...state,ReadyToBoxOrders:[...state.ReadyToBoxOrders,action.payload.data]};
     case Constants.Boxed_Order:
       return {...state,ReadyToShipOrders:[...state.ReadyToShipOrders,action.payload.data]};
     case Constants.Report_Failure:

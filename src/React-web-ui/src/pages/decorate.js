@@ -17,7 +17,7 @@ class Decorate extends Component {
 
     componentDidMount = () => {
         const hubConnection = new SignalR.HubConnectionBuilder()
-            .withUrl("http://localhost:5001/ordermonitorhub?consumergroup=bostonbeach&topic=readytodecorate")
+            .withUrl("http://localhost:5003/ordermonitorhub?consumergroup=bostonbeach&topic=readytodecorate")
             .configureLogging(SignalR.LogLevel.Information)
             .build();
         
@@ -73,10 +73,11 @@ class Decorate extends Component {
     render() {
         return (
             <div style={{"textAlign":"left"}}>
+            <h1 style={{"color":"blue"}}>Hey Decorator </h1>
                 {this.state.messages.length ? <b>New orders to be baked: <b style={{"fontSize":"50px"}}> {this.state.messages.length}</b></b> :""}
                 <br/>
                 {this.state.messages.length ? 
-                        <DisplayOrders list={this.state.messages} submitBakedOrder={this.handleDecoratedOrderClick} reportFailure = {this.handleFailureOrderClick} process="Decorate" /> : "No new orders"}
+                        <DisplayOrders list={this.state.messages} submitOrder={this.handleDecoratedOrderClick} reportFailure = {this.handleFailureOrderClick} process="Decorate" /> : "No new orders"}
             </div>
         );
     }
