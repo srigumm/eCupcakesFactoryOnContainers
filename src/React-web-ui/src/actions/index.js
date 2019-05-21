@@ -86,3 +86,18 @@ export const submitUserOrderRequest = ({ Id, Flavour,Size, Quantity }) => {
               payload: request
             };
           }
+          export const reportFailure = (payload) =>{
+            const headers = {
+              'Content-Type': 'application/json'
+            }  
+            const request = axios.post(
+                "http://localhost:5000/api/v1/order/reporterror",
+                {"Order":payload},
+                {headers: headers}
+              ).catch(err =>{console.log("Error occured while report order failure:",err);throw err;});
+            
+              return {
+                type: Actions.Report_Failure,
+                payload: request
+              };
+            }

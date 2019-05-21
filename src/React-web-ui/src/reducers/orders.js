@@ -3,23 +3,27 @@ import * as Constants  from "../actions/types";
 
 const initialState={
     submittedorders:[{"Id":123},{"Id":345},{"Id":789}],
-    BakedOrders:[],
-    MixedOrders:[],
-    DecoratedOrders:[],
-    BoxedOrders:[]
+    ReadyToBakeOrders:[],
+    ReadyToMixOrders:[],
+    ReadyToDecorateOrders:[],
+    ReadyToBoxOrders:[],
+    ReadyToShipOrders:[],
+    OrderFailures:[]
 };
 const orderReducer = (state = initialState, action) => {
   switch (action.type) {
     case Constants.Submit_User_Order:
       return { ...state, submittedorders:[...state.submittedorders,action.payload.data] };
     case Constants.Baked_Order:
-      return {...state,BakedOrders:[...state.BakedOrders,action.payload.data]};
+      return {...state,ReadyToDecorateOrders:[...state.ReadyToDecorateOrders,action.payload.data]};
     case Constants.Mixed_Order:
-      return {...state,MixedOrders:[...state.MixedOrders,action.payload.data]};
+      return {...state,ReadyToBakeOrders:[...state.ReadyToBakeOrders,action.payload.data]};
     case Constants.Decorated_Order:
-      return {...state,DecoratedOrders:[...state.DecoratedOrders,action.payload.data]};
+      return {...state,RadyToBoxOrders:[...state.RadyToBoxOrders,action.payload.data]};
     case Constants.Boxed_Order:
-      return {...state,BoxedOrders:[...state.BoxedOrders,action.payload.data]};
+      return {...state,ReadyToShipOrders:[...state.ReadyToShipOrders,action.payload.data]};
+    case Constants.Report_Failure:
+      return {...state,OrderFailures:[...state.OrderFailures,action.payload.data]};
 
     default:
       return state;

@@ -157,6 +157,28 @@ namespace Api.Controllers
             return Ok();
         }
 
+        [Route("reporterror")]
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ReportOrderFailureAsync([FromBody]ReportOrderFailureCommand cmd)
+        {
+            if(!ModelState.IsValid){
+                BadRequest();
+            }
+
+            var failedOrder = cmd.Order;
+
+            Console.WriteLine("===============Recieved Failure Order====================");
+            //TODO: Add command handler and raise event to capture this in the system.
+            //Serialize 
+            string serializedOrder = JsonConvert.SerializeObject(failedOrder);
+            var producer = new ProducerWrapper(this._config,"orderfailures");
+            await producer.writeMessage(serializedOrder);
+
+            return Ok();
+        }
+
         [HttpGet("{id}")]
         public ActionResult<OrderRequest> GetById(int id)
         {

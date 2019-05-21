@@ -1,13 +1,13 @@
 import React,{Component} from 'react'
 import * as SignalR from "@aspnet/signalr";
 import DisplayOrders from "../components/displayorders";
-import { submitMixedOrder, reportFailure } from "../actions";
+import { submitDecoratedOrder,reportFailure } from "../actions";
 import { connect } from "react-redux";
 
-class Mixer extends Component {
+class Decorate extends Component {
     constructor(props) {
         super(props);
-        this.handleMixedOrderClick = this.handleMixedOrderClick.bind(this);
+        this.handleDecoratedOrderClick = this.handleDecoratedOrderClick.bind(this);
 
         this.state = {
             messages: [],
@@ -17,7 +17,7 @@ class Mixer extends Component {
 
     componentDidMount = () => {
         const hubConnection = new SignalR.HubConnectionBuilder()
-            .withUrl("http://localhost:5001/ordermonitorhub?consumergroup=bostonbeach&topic=orderrequests")
+            .withUrl("http://localhost:5001/ordermonitorhub?consumergroup=bostonbeach&topic=readytodecorate")
             .configureLogging(SignalR.LogLevel.Information)
             .build();
         
@@ -28,7 +28,7 @@ class Mixer extends Component {
             }).catch(err => console.log('Error while establishing connection :('));
         });
 
-        hubConnection.on('InformNewOrderToMix', (receivedMessage) => {
+        hubConnection.on('InformNewOrderToDecorate', (receivedMessage) => {
             console.log(receivedMessage);
             var newArray = this.state.messages.slice();
             newArray.push(receivedMessage);
@@ -38,19 +38,19 @@ class Mixer extends Component {
         
     }
 
-    handleMixedOrderClick = (orderObj) => {
+    handleDecoratedOrderClick = (orderObj) => {
         //TODO
-        /* When user clicks on Mix button in the UI
-             2. We trigger service call and update the status of this order as Mixed (by writing to (readytobake) topic)
+        /* When user clicks on Submit button in the UI
+             2. We trigger service call and update the status of this order as Decorated (by writing to (readytobox) topic)
              3. Remove this order from recieved order list since it is already processed.
         */
         //1
         console.log(this.state.messages);
-        var payload = Object.assign({},orderObj,{"MixedBy":"CookName1","MixedOn":"TestDate"});
+        var payload = Object.assign({},orderObj,{"DecoratedBy":"CookName2","DecoratedOn":"TestDate"});
         
         //2
-        console.log("Submitting mixed order -"+JSON.stringify(payload));
-        this.props.submitMixedOrder(payload);
+        console.log("Submitting decorated order -"+JSON.stringify(payload));
+        this.props.submitDecoratedOrder(payload);
         
         //3
         var newArray = this.state.messages.filter( el => el.id != orderObj.id )
@@ -73,24 +73,24 @@ class Mixer extends Component {
     render() {
         return (
             <div style={{"textAlign":"left"}}>
-                {this.state.messages.length ? <b>New orders to be mixed: <b style={{"fontSize":"50px"}}> {this.state.messages.length}</b></b> :""}
+                {this.state.messages.length ? <b>New orders to be baked: <b style={{"fontSize":"50px"}}> {this.state.messages.length}</b></b> :""}
                 <br/>
                 {this.state.messages.length ? 
-                        <DisplayOrders list={this.state.messages} submitMixedOrder={this.handleMixedOrderClick} process="Mix" reportFailure = {this.handleFailureOrderClick} /> : "No new orders"}
+                        <DisplayOrders list={this.state.messages} submitBakedOrder={this.handleDecoratedOrderClick} reportFailure = {this.handleFailureOrderClick} process="Decorate" /> : "No new orders"}
             </div>
         );
     }
 }
 
-const mapStateToProps = state => ({ readytomixorders: state.order.ReadyToMixOrders });
+const mapStateToProps = state => ({ readytodecorateorders: state.order.ReadyToDecorateOrders });
 
 const mapDispatchToProps = dispatch => ({
-    submitMixedOrder: payload => dispatch(submitMixedOrder(payload)),
+    submitDecoratedOrder: payload => dispatch(submitDecoratedOrder(payload)),
     reportFailedOrder: payload => dispatch(reportFailure(payload))
 });
 
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(Mixer);
+)(Decorate);
 

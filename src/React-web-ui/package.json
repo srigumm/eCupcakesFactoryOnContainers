@@ -5,8 +5,10 @@
   "dependencies": {
     "@aspnet/signalr": "^1.1.4",
     "@material-ui/core": "^3.9.3",
+    "@material-ui/icons": "^3.0.2",
     "axios": "^0.18.0",
     "react": "^16.8.6",
+    "react-bootstrap": "^1.0.0-beta.8",
     "react-dom": "^16.8.6",
     "react-redux": "^7.0.2",
     "react-router-dom": "^5.0.0",

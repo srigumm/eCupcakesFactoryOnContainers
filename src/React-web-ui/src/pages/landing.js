@@ -1,17 +1,19 @@
 
 import React from 'react';
 import { connect } from "react-redux";
-import DisplayOrders from "../pages/listorders";
 import { submitUserOrderRequest,submitMixedOrder,submitBakedOrder,submitDecoratedOrder,submitBoxedOrder } from "../actions";
-import OrdersToMixer from "../components/mixerprocess";
-import OrdersToBake from "../components/bakeprocess";
-import OrdersToDecorate from "../components/decorateprocess";
-import OrdersToBox from "../components/packageprocess";
+import OrdersToMixer from "../components/dashboard/mixerprocess";
+import OrdersToBake from "../components/dashboard/bakeprocess";
+import OrdersToDecorate from "../components/dashboard/decorateprocess";
+import OrdersToBox from "../components/dashboard/packageprocess";
 import OrderRequest from "../components/orderrequest";
 import Grid from '@material-ui/core/Grid';
-
+// import IconLabelTabs from '../components/IconLabelTabs';
  export const Landing = (props) => {
     return (
+        // <div>
+        //     <IconLabelTabs />
+        // </div>
         <div>
             <Grid container spacing={24} style={{padding: 24}}>
                 <Grid item xs={12} sm={6} lg={4} xl={3}>

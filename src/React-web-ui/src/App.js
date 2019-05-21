@@ -5,13 +5,13 @@ import Routes from './routes';
 import './App.css';
 import store from './store'
 import Header from './components/header';
-import CookingProcess from './components/cookingprocess';
+import CookingProcess from './components/dashboard/cookingprocess';
 const App = () => (
     <Provider store={store}>
       <div className="App">
         <div>
           <Header />
-          <CookingProcess />
+          {/* <CookingProcess /> */}
           <Router>
             <Routes />
           </Router> 
