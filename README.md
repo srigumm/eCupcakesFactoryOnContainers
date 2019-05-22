@@ -1,71 +1,146 @@
-# Cupcakes Factory - usecase to demonstrate even streaming using KAFKA
+# eCupcakesFactoryOnCotaners - usecase to demonstrate containerized microservices using .Net Core and Kafka.
 
-### User Scenario:
+**"eCupcakesFactoryOnContainers"** is based on a simplified **"Microservices"** architecture and docker containers. Core intent of this reference application is to provide reference implementation for .Net developers to easily get started with containerized microservices using **.Net Core** and **Kafka**.
+
+### What is eCupcakesFactory ??
+It's a fictional cupcake factory usecase mentioned in my colleague William Scott's [blog post](https://blog.usejournal.com/why-are-you-still-doing-batch-processing-etl-is-dead-3dac2392a772) on event streaming, please read his blogpost before you start looking into this sample codebase.
+
+- To simplify things, our focus will be only on just ordering "Cupcakes" with very few flavors, modifying the order and cancelling the order scenarios are out of scope for this blog. 
+- When users visit our eCupcakeFactory application, they could order one or more cupcakes, and the kitchen staff would immediately get notified about these new orders. 
+- Below are the main steps involved in preparing user order:
+  - **Mixing**: Involves preparing the cupcake batter with right ingredients.
+  - **Baking**: once the mixed batter is available, we pour it in evenly into liners and bake cupcakes in a preheated oven.
+  - **Decorating**: once cupcakes are completely cooled, we can frost and decorate them as simply or creatively.
+  - **Packaging/Boxing**: packaging the right size box and packaging the order.
+  - **Shipping**: delivering the order.
 
 
-Implementation of user scenario mentioned in Bill's medium blog on event streaming.
-https://blog.usejournal.com/why-are-you-still-doing-batch-processing-etl-is-dead-3dac2392a772
+![castle cupcakes](https://raw.githubusercontent.com/srigumm/eCupcakesFactoryOnContainers/master/img/castlecupcakes.png)
 
-![castle cupcakes](https://raw.githubusercontent.com/srigumm/KafkaEventStreamingSimulation/master/cupcakes.ui/src/images/castlecupcakes.png)
+### Architecture:
 
-![architecture diagram](https://raw.githubusercontent.com/srigumm/KafkaEventStreamingSimulation/master/cupcakes.ui/src/images/cookingprocess.png)
+![architecture diagram](https://raw.githubusercontent.com/srigumm/eCupcakesFactoryOnContainers/master/img/architecture-diagram.png)
 
- To address scaling individual apps and other performance related key metrics, lets assume that we have decided to build the below two critical components
-  - An Order API(RESTful) that takes users orders and responds back immediately with some acknowledgement info.
-  - Below background services that actually process these order requests.
-    - "Mixer Service"
-    - "Bake Service"
-    - "Decoration Service"
-    - "Box Service"
-  - A SignalR endpoint with the below events, UI layer subscribes to these events to get the notifications.
+- It's an event driven architecture implementation with multiple **micro-services**(some are background services)  each having its own responsibility and configured to respond on certain events like "NewOrderRecieved","OrderBaked","OrderMixed" etc. 
+- Microservices implemented with coding patterns/practices like **CQRS**(using MediatR Framework),multi route WebApi controllers etc.
+- Used **Kafka** as message broker for communication b/w these micro services, also leveraged Kafka as **persistent datastore**. 
+- Used confluent's **"kafka connect"** sink and CDC plugins to import/export data to/from "MongoDB".
+- **React-Redux** architecture for client apps, used http as the communication protocol between the client react apps and the microservices.
+- Used **SignalR hubs** for notifying react client applications about the data updates.
 
-         "http://localhost:5002/ordermonitorhub"
-        
-        "InformNewOrderToBake"
-        "InformNewOrderToMix"
-        "InformNewOrderToDecorate"
-        "InformNewOrderToPackage"
+**Note**: *we haven't implemented ApiGateway yet, but it will be added in future releases. Right now all Apis/Services are accessed directly from UI.* 
 
+### Technology Stack:
+- .Net Core
+- Confluent Kafka Cloud
+- Confluent Kafka Connect
+- SingalR
+- React-Redux
+- Docker
+- Kubernetes* 
+
+Notes: Kubernetes implementation is in "gcpmigation" branch of this repository.
 
 ### Prerequisites:
-
- - VSCODE or some .net code editor
- - .NET Core 2.2
- - Docker
- - KAFKA Installation and Topics setup
- - Kafkacat command line tool
- - If you are connecting to Kerberos-aware KAFKA Enterprise Instance, ensure the below things:
-    - Setup krb5.Conf file  with your organization's KDC details.
-    - Keep krb5.conf file in default path i.e /etc/ or specify the path with KRB5_CONFIG environment variable.
-    - Create Keytab file with your principal
-    - Make sure your/service account has atleast read access to krb5.conf file.
+- VSCODE or some .net code editor
+- .NET Core 2.2
+- Docker&Docker-Compose
+- Kafka Installation and Topics setup
+- Kafkacat command line tool
 
 ### How to install KAFKA in local??
-- It's easy to setup KAFKA in local using docker containers.
-  Clone the below below repository and run "docker-compose up" command.
-        commands:
+- Download and Start Confluent Platform: https://docs.confluent.io/current/quickstart/ce-quickstart.html
+- Using docker: It's easy to setup KAFKA in local using docker containers.
+  Clone the below below repository and run "docker-compose up" command.commands:
 
-             git clone https://github.com/TribalScale/kafka-waffle-stack.git
-             cd kafaka-waffle-stack
-             docker-compose up
+        Commands:
+        
+        git clone https://github.com/confluentinc/cp-docker-images
+        cd cp-docker-images
+        git checkout 5.2.1-post
+        cd examples/cp-all-in-one/
+        docker-compose up -d --build
+   
    Above instructions should start a KAFKA server, and you can use the broker localhost:9092 to produce/consumer messages.
 - Creating a new topic in local KAFKA:
     producing a sample message to a topic using kafkacat utility would create topic if it doesn't exist.
-    so, run the below command and give some sample message like {"id":1234,"productname":"Unicorn Whistles","quantity":3}
-
+    
        kafkacat -b localhost:9092 -t new_topic -P
 
-### Implementation:
 
-- Implemented a dotnetcore-WebApi post handler to capture user's order requests.( into "orderrequests" kafka topic)
-- Implemented background services(HostedService in .NET core) that process the user's order requests from source topic and writes to next kafka topic.
 
-### Run & Test:
+## User Scenarios & Flow of events:
+
+![userscenarios](https://raw.githubusercontent.com/srigumm/eCupcakesFactoryOnContainers/master/img/userscenarios-diagram.png)
+
+
+## Components
+### Order Api: 
+RESTful Api that takes users orders and responds back immediately with some acknowledgement info.
+
+- **api/v1/order** → (to place a new order)
+- **api/v1/order/mix** → (to update the current order as mixed)
+- **api/v1/order/bake** → (to update the current order as baked)
+- **api/v1/order/decorate** →(to update the current order as decorated)
+- **api/v1/order/box** →(to update the current order as packaged)
+
+Example:
+
+    Curl -i -H "Content-Type: application/json" -X POST -d '{"Order":{"Flavour":"Strawberry","Quantity":1,"Size":1}}' http://localhost:5000/api/v1/order
+
+    **Refer src/Api/README.md for more details.
+
+### Background Services (with signalr endpoint)
+
+![castle cupcakes](https://raw.githubusercontent.com/srigumm/eCupcakesFactoryOnContainers/master/img/cupcakecookingalgorithm.png)
+
+These services continually monitors KAFKA topics and push notifications to all connected clients(i.e react-ui here) about the newly received orders/updates to existing orders.
+
+- **"Mixer Service"**
+- **"Bake Service"**
+- **"Decoration Service"**
+- **"Box Service"**
+
+SingnalR Endpoint&Actions:
+
+    http://localhost:5002/ordermonitorhub
+
+    "InformNewOrderToBake"
+    "InformNewOrderToMix"
+    "InformNewOrderToDecorate"
+    "InformNewOrderToPackage"
+
+**Note**: *why do we need SignalR here? Though Kafka is pub/sub system, there is no direct browser client available. So we need something like SignalR to push these notifications to UI clients.*
+
+### Web Client (React-Redux application)
+Provides web interfaces
+
+- **Customers**: simple UI to place new orders
+- **KitchenStaff**: simple UI to update the order status.
+- **Admins**: Dashboard UI 
+  
+urls:
+
+     customer: http://localhost:3000/create
+     mixer: http://localhost:3000/mixer
+     baker: http://localhost:3000/baker
+     decorator: http://localhost:3000/decorator
+     packaging team: http://localhost:3000/packaging
+     Admins:
+     http://localhost:3000/dashboard
+
+### Kafka-Mongo-Connector:
+*Refer src/kafka-mongodb-connector/README.md for more details.*
+ 
+### Mongo-To-Kafka-CDC:
+*Refer kafka-mongod-cdc/README.md for more details.*
+
+## Run & Test:
 1. Clone this repository:
 
-       git clone https://github.com/srigumm/KafkaEventStreamingSimulation.git
-       cd <<folder>>
-2. Create Kafka Topics(use kafkacat util):
+       git clone https://github.com/srigumm/eCupcakesFactoryOnCotainers.git
+       cd eCupcakesFactoryOnCotainers
+2. Install kafka and create kafka topics(use control-center or kafkacat util):
 
         "orderrequests"
         "readytobake"
@@ -76,107 +151,35 @@ https://blog.usejournal.com/why-are-you-still-doing-batch-processing-etl-is-dead
         Example:
         kafkacat -b localhost:9092 -t orderrequests -P
 
-3. Start Order-Api REST service:  
-        
-       cd Api
-       dotnet restore
-       dotnet build
-       dotnet run
+3. Running in Local Machine using Docker:
 
-      This should start  webserver for our webapi rest service.
-
-        WebApi URL: http://localhost:5000/api/order
-
-4. Start background Services:
-
+       "docker-compose up"
     
-        cd Service.Mixing
-        dotnet run
+    executing this command at root directory should be enough to start the whole system ( it builds all required docker images and containers in localbox).
 
-        cd Service.Baking
-        dotnet run
+on successful run, you can access your UI/Services at the below endpoints:
 
-        cd Service.Decorating
-        dotnet run
+<script src="https://gist.github.com/sgummadidala/a4de154e56b6b747289c1e82d548e2b7"></script>
 
-        cd Service.Packaging
-        dotnet run
+## UI Screens:
 
-5. Start React UI
+### Login:
+![Mixer UI](https://raw.githubusercontent.com/srigumm/eCupcakesFactoryOnContainers/master/img/ui/login.png)
 
-        cd cupcakes.ui
-        npm start
-        
+### Place a new order:
+![place new order](https://raw.githubusercontent.com/srigumm/eCupcakesFactoryOnContainers/master/img/ui/createorder.png)
 
-6. Verify if new messages were written to topics using kafkacat utility:
+### Mixer:
+![Mixer UI](https://raw.githubusercontent.com/srigumm/eCupcakesFactoryOnContainers/master/img/ui/mixer.png)
 
-       kafkacat -b localhost:9092 -t orderrequests -C
-       kafkacat -b localhost:9092 -t readytobake -C
-       kafkacat -b localhost:9092 -t readytodecorate -C
-       kafkacat -b localhost:9092 -t readytobox -C
-       kafkacat -b localhost:9092 -t readytoship -C
-7. How to verify individual API calls?
+### Baker:
+![Baker UI](https://raw.githubusercontent.com/srigumm/eCupcakesFactoryOnContainers/master/img/ui/baker.png)
 
-        I. Submitting a new order:
-        
-        Curl -i -H "Content-Type: application/json" -X POST -d '{"Order":{"Flavour":"Cookies","Quantity":11}}' http://localhost:5000/api/v1/order
+### Decorator:
+![Baker UI](https://raw.githubusercontent.com/srigumm/eCupcakesFactoryOnContainers/master/img/ui/decorator.png)
 
-        Expected Response:
-        {
-                "correlationId": "834fea52-c476-4469-8c7d-8efd15d38d9e",
-                "acknowledgment": "Recieved your order!! Estimated time to process is 10mins",
-                "createdOn": "05/04/2019 19:24",
-                "order": {
-                        "id": 0,
-                        "flavour": "Cookies",
-                        "size": 0,
-                        "quantity": 11
-                }
-        }
+### Packaging:
+![Packaging UI](https://raw.githubusercontent.com/srigumm/eCupcakesFactoryOnContainers/master/img/ui/packaging.png)
 
-        II. Updating order as mixed:
-
-        Curl -i -H "Content-Type: application/json" -X POST -d '{"Order":{"Flavour":"Cookies","Quantity":11,"MixedBy":"Tom","MixedOn":"05/04/2019 02:05PM"}}' http://localhost:5000/api/v1/order/mix
-
-        Expected Response:
-
-        200 OK
-
-        III. Updating order as baked:
-
-        Curl -i -H "Content-Type: application/json" -X POST -d '{"Order":{"Id":123,"Flavour":"Cookies","Quantity":11,"MixedBy":"Tom","MixedOn":"05/04/2019 02:05PM",
-        "BakedBy":"Harry","BakedOn":"05/04/2019 02:10PM"}}' http://localhost:5000/api/v1/order/bake
-
-        Expected Response:
-
-        200 OK
-
-        IV. Updating order as decorated:
-
-        Curl -i -H "Content-Type: application/json" -X POST -d '{"Order":{"Id":123,"Flavour":"Cookies","Quantity":11,"MixedBy":"Tom","MixedOn":"05/04/2019 02:05PM",
-        "BakedBy":"Harry","BakedOn":"05/04/2019 02:10PM",
-        "DecoratedBy":"James","DecoratedOn":"05/04/2019 02:15PM"}}' http://localhost:5000/api/v1/order/decorate
-
-        Expected Response:
-
-        200 OK
-
-        V. Updating order as packaged:
-
-        Curl -i -H "Content-Type: application/json" -X POST -d '{"Order":{"Id":123,"Flavour":"Cookies","Quantity":11,"MixedBy":"Tom","MixedOn":"05/04/2019 02:05PM",
-        "BakedBy":"Harry","BakedOn":"05/04/201902:10PM",
-        "DecoratedBy":"James","DecoratedOn":"05/04/2019 02:15PM",
-        "PackagedBy":"Bill",
-        "PackagedOn":"05/04/2019 02:20PM"}}' http://localhost:5000/api/v1/order/box
-
-        Expected Response:
-
-        200 OK
-
-
-
-### Troubleshooting tips:
-- If your producer/consumer is not responding at all, then verify your keytab file with below steps
-
-      kinit username@MYDOMAIN.COM -k -t username.keytab
-    you should get authenticated successfully (without being prompted for a password).
+### Dashboard:
+![Dashboard UI](https://raw.githubusercontent.com/srigumm/eCupcakesFactoryOnContainers/master/img/ui/dashboard.png)
