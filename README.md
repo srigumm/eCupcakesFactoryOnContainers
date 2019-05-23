@@ -1,4 +1,4 @@
-# eCupcakesFactoryOnCotaners - usecase to demonstrate containerized microservices using .Net Core and Kafka.
+# eCupcakesFactoryOnContainers - use case to demonstrate containerized microservices using .Net Core and Kafka.
 
 **"eCupcakesFactoryOnContainers"** is based on a simplified **"Microservices"** architecture and docker containers. Core intent of this reference application is to provide reference implementation for .Net developers to easily get started with containerized microservices using **.Net Core** and **Kafka**.
 
