@@ -183,3 +183,15 @@ on successful run, you can access your UI/Services at the below endpoints:
 
 ### Dashboard:
 ![Dashboard UI](https://raw.githubusercontent.com/srigumm/eCupcakesFactoryOnContainers/master/img/ui/dashboard.png)
+
+
+### Demo Videos:
+
+Demo@Meetup 
+https://www.youtube.com/watch?v=xNAZWHtakoQ&feature=youtu.be&t=2912
+
+Demo:
+https://www.youtube.com/watch?v=BQe6tDDEyjs&feature=youtu.be
+
+
+
