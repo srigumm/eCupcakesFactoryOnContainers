@@ -5,9 +5,19 @@ using Confluent.Kafka;
 using Microsoft.AspNetCore.SignalR;
 using System.Linq;
 using System;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration.EnvironmentVariables;
 namespace SignalRDemo.Hubs{
     public class OrderMonitorHub : Hub<IOrderRequest>
     {
+        public OrderMonitorHub(IConfiguration config,ConsumerConfig consumerConfiguration)
+        {
+            _consumerConfig = consumerConfiguration;
+            _config = config;
+        }
+        private ConsumerConfig _consumerConfig;
+        private IConfiguration _config;
         public override async Task OnConnectedAsync(){
             //manage and track connections here
             if(!SignalRKafkaProxy.AllConsumers.Keys.Contains(Context.ConnectionId)){
@@ -18,7 +28,7 @@ namespace SignalRDemo.Hubs{
                 SignalRKafkaProxy.AddClient(client);
 
                 //Create a connection object 
-                Consumer<string,string> consumerObj = new Consumer<string,string>(client.ConsumerConfig);
+                IConsumer<string,string> consumerObj = new ConsumerBuilder<string,string>(client.ConsumerConfig).Build();
                 consumerObj.Subscribe(client.Topic);
                 Console.WriteLine($"Adding {consumerObj}");
                 SignalRKafkaProxy.AddConsumer(client.ConnectionId,consumerObj);
@@ -39,19 +49,21 @@ namespace SignalRDemo.Hubs{
             //TODO
             var httpContext = Context.GetHttpContext();
             string consumerGroupName = httpContext.Request.Query["consumergroup"];
-            string topicName = httpContext.Request.Query["topic"];
-            ConsumerConfig config = new ConsumerConfig(){
-                GroupId = consumerGroupName,
-                BootstrapServers="broker:9092",
-                ClientId=context.ConnectionId
-            };
+            string topicName = this.TopicToMonitor;
+            ConsumerConfig config =  _consumerConfig;
+            config.GroupId = consumerGroupName;
+            config.ClientId = context.ConnectionId;
             return new SignalRClient(){ ConsumerConfig = config,Topic=topicName,ConsumerGroup=consumerGroupName,ConnectionId=context.ConnectionId};
         }
 
-        public Dictionary<string,Consumer<string,string>> AllActiveConnections{
+        public Dictionary<string,IConsumer<string,string>> AllActiveConnections{
             get{
                 return  SignalRKafkaProxy.AllConsumers;
             }
+        }
+
+        private string TopicToMonitor{
+            get{return this._config["topic"];}
         }
     }
 }

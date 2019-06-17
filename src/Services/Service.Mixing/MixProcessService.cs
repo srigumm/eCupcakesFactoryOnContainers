@@ -18,14 +18,12 @@ namespace Api.BackgroundServices
         public MixProcessService()
         {
         }
-        public MixProcessService(IHubContext<OrderMonitorHub, IOrderRequest> orderMonitorHub,ProducerConfig producerConfig, ConsumerConfig consumerConfig)
+        public MixProcessService(IHubContext<OrderMonitorHub, IOrderRequest> orderMonitorHub, ConsumerConfig consumerConfig)
         {
             this._orderMonitorHub = orderMonitorHub;
-            this._producerConfig = producerConfig;
             this._consumerConfig = consumerConfig;
         }
         private IHubContext<OrderMonitorHub, IOrderRequest> _orderMonitorHub;
-        private ProducerConfig _producerConfig;
         private ConsumerConfig _consumerConfig;
 
         
@@ -40,7 +38,7 @@ namespace Api.BackgroundServices
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                var allConnections = new Dictionary<string,Consumer<string,string>>(SignalRKafkaProxy.AllConsumers);
+                var allConnections = new Dictionary<string,IConsumer<string,string>>(SignalRKafkaProxy.AllConsumers);
                 Console.WriteLine("Connections count:"+allConnections.Count);
                 foreach (var c in allConnections)
                 {
@@ -53,12 +51,12 @@ namespace Api.BackgroundServices
                         //Read a message
                         string connectionId = connection.Key;
                         Console.WriteLine($"connection: {connectionId}, consumer:{connection.Value}");
-                        Consumer<string,string> consumerConnection = connection.Value;
+                        IConsumer<string,string> consumerConnection = connection.Value;
 
                         var consumerResult = consumerConnection.Consume(new TimeSpan(0,0,15));
 
                         if(consumerResult!=null){
-
+                            if(consumerResult.Value!=null){
                             //Deserilaize 
                             OrderRequest orderRequest = JsonConvert.DeserializeObject<OrderRequest>(consumerResult.Value);
                             Console.WriteLine($"Info: Recieved order to mix. Id# {orderRequest.Id}");
@@ -67,6 +65,7 @@ namespace Api.BackgroundServices
                             Console.WriteLine($"Informing UI connected client - {connectionId} about the newly recieved order. Id# {orderRequest.Id}");
 
                             await _orderMonitorHub.Clients.Client(connectionId).InformNewOrderToMix(orderRequest);
+                            }
                         }
                     }
                 }

@@ -4,11 +4,12 @@ namespace Api.KafkaUtil
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using System.Collections.Generic;
 
     public class ProducerWrapper
     {
         private string _topicName;
-        private Producer<string,string> _producer;
+        private IProducer<string,string> _producer;
         private ProducerConfig _config;
         private static readonly Random rand = new Random();
 
@@ -16,18 +17,23 @@ namespace Api.KafkaUtil
         {
             this._topicName = topicName;
             this._config = config;
-            this._producer = new Producer<string,string>(this._config);
-            this._producer.OnError += (_,e)=>{
-                Console.WriteLine("Exception:"+e);
-            };
+            this._producer = new ProducerBuilder<string,string>(this._config).Build();
+            // this._producer.OnError += (_,e)=>{
+            //     Console.WriteLine("Exception:"+e);
+            // };
         }
         public async Task writeMessage(string message){
-            var dr = await this._producer.ProduceAsync(this._topicName, new Message<string, string>()
-                        {
-                            Key = rand.Next(5).ToString(),
-                            Value = message
-                        });
-            Console.WriteLine($"KAFKA => Delivered '{dr.Value}' to '{dr.TopicPartitionOffset}'");
+            using (var producer = new ProducerBuilder<string, string>(this._config).Build())
+            {
+                await producer.ProduceAsync(this._topicName, new Message<string, string> { Key = rand.Next(5).ToString(),Value = message })
+                    .ContinueWith(task => task.IsFaulted
+                        ? $"error producing message: {task.Exception.Message}"
+                        : $"produced to: {task.Result.TopicPartitionOffset}");
+
+                // block until all in-flight produce requests have completed (successfully
+                // or otherwise) or 10s has elapsed.
+                producer.Flush(TimeSpan.FromSeconds(10));
+            }
             return;
         }
     }

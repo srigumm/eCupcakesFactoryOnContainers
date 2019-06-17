@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration.EnvironmentVariables;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SignalRDemo.Hubs;
@@ -17,12 +18,16 @@ namespace Api
 {
     public class Startup
     {
+        private readonly IConfiguration _configuration;
+
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            var builder = new ConfigurationBuilder()
+            .AddConfiguration(configuration)
+            .AddJsonFile("globalkafkasettings.json")
+            .AddEnvironmentVariables();
+            _configuration = builder.Build();
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -35,14 +40,26 @@ namespace Api
                 });
             
             var producerConfig = new ProducerConfig();
-            var consumerConfig = new ConsumerConfig();
-            Configuration.Bind("producer",producerConfig);
-            Configuration.Bind("consumer",consumerConfig);
+            _configuration.Bind("producer",producerConfig);
+
+
+            //Reading the environment variable.
+            var envBootStrapServers = _configuration.GetValue<string>("ENV_KAFKA_CLUSTER");
+            if(!String.IsNullOrEmpty(envBootStrapServers)){
+                producerConfig.BootstrapServers =  envBootStrapServers;
+            }
+
+            var envSaslUserName = _configuration.GetValue<string>("ENV_KAFKA_USER_NAME");
+            if(!String.IsNullOrEmpty(envSaslUserName)){
+                producerConfig.SaslUsername =  envSaslUserName;
+            }
+
+            var envSaslPassword = _configuration.GetValue<string>("ENV_KAFKA_USER_PASSWORD");
+            if(!String.IsNullOrEmpty(envSaslPassword)){
+                producerConfig.SaslPassword =  envSaslPassword;
+            }
 
             services.AddSingleton<ProducerConfig>(producerConfig);
-            services.AddSingleton<ConsumerConfig>(consumerConfig);
-
-            //services.AddScoped<IMediator, Mediator>();
             services.AddMediatR(typeof(Startup));
  
         }

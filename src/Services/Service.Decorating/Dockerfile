@@ -22,6 +22,12 @@ RUN dotnet publish ./DecoratorService.csproj -c Release -o /app
 #WORKDIR /src/src/Services/Ordering/Ordering.UnitTests
 
 FROM base AS final
+
+RUN mkdir -p /usr/local/etc/openssl
+RUN cd /usr/local/etc/openssl
+WORKDIR /usr/local/etc/openssl
+RUN curl https://curl.haxx.se/ca/cacert.pem -o cert.pem
+
 WORKDIR /app
 COPY --from=publish /app .
 ENTRYPOINT ["dotnet", "DecoratorService.dll"]

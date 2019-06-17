@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: ecupcakes-orderapi-service
+spec:
+  selector:
+    app: ecupcakes-orderapi-deployment
+  type: NodePort
+  ports:
+  - protocol: TCP
+    nodePort: 32131
+    port: 80
+    targetPort: 5000
