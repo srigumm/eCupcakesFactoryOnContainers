@@ -6,6 +6,7 @@ FROM mcr.microsoft.com/dotnet/core/sdk:2.2 AS build
 WORKDIR /src
 
 COPY src/Common.Utils/ /src/Common.Utils/
+COPY src/signalr-proxy-kafka/ /src/signalr-proxy-kafka/
 COPY src/Api/Api.csproj /src/OrderMicroService/
 
 RUN dotnet restore /src/OrderMicroService/Api.csproj

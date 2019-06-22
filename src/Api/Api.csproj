@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common.Utils\Common.Utils.csproj" />
+    <ProjectReference Include="..\signalr-proxy-kafka\signalr-proxy-kafka.csproj" />
     <Content Include="..\Common.Utils\globalkafkasettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

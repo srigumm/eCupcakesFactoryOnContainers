@@ -17,12 +17,12 @@ namespace Api.BackgroundServices
         public BakeProcessService()
         {
         }
-        public BakeProcessService(IHubContext<OrderMonitorHub, IOrderRequest> orderMonitorHub, ConsumerConfig consumerConfig)
+        public BakeProcessService(IHubContext<OrderMonitorHub, IOrder> orderMonitorHub, ConsumerConfig consumerConfig)
         {
             this._orderMonitorHub = orderMonitorHub;
             this._consumerConfig = consumerConfig;
         }
-        private IHubContext<OrderMonitorHub, IOrderRequest> _orderMonitorHub;
+        private IHubContext<OrderMonitorHub, IOrder> _orderMonitorHub;
         private ConsumerConfig _consumerConfig;
 
         

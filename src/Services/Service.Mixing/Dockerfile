@@ -6,6 +6,7 @@ FROM mcr.microsoft.com/dotnet/core/sdk:2.2 AS build
 WORKDIR /src
 
 COPY src/Common.Utils/ /src/Common.Utils/
+COPY src/signalr-proxy-kafka/ /src/signalr-proxy-kafka/
 COPY src/Services/Service.Mixing/MixingService.csproj /src/Services/HostedService.Mixer/
 
 RUN dotnet restore /src/Services/HostedService.Mixer/MixingService.csproj

@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration.EnvironmentVariables;
 namespace SignalRDemo.Hubs{
-    public class OrderMonitorHub : Hub<IOrderRequest>
+    public class OrderMonitorHub : Hub<IOrder>
     {
         public OrderMonitorHub(IConfiguration config,ConsumerConfig consumerConfiguration)
         {

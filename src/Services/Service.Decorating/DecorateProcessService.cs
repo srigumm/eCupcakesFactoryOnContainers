@@ -17,12 +17,12 @@ namespace Api.BackgroundServices
         public DecorateProcessService()
         {
         }
-        public DecorateProcessService(IHubContext<OrderMonitorHub, IOrderRequest> orderMonitorHub,  ConsumerConfig consumerConfig)
+        public DecorateProcessService(IHubContext<OrderMonitorHub, IOrder> orderMonitorHub,  ConsumerConfig consumerConfig)
         {
             this._orderMonitorHub = orderMonitorHub;
             this._consumerConfig = consumerConfig;
         }
-        private IHubContext<OrderMonitorHub, IOrderRequest> _orderMonitorHub;
+        private IHubContext<OrderMonitorHub, IOrder> _orderMonitorHub;
         private ConsumerConfig _consumerConfig;
 
 
