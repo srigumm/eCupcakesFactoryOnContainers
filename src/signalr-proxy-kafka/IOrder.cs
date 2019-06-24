@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 
 namespace Api.Models{
-    public interface IOrderRequest
+    public interface IOrder
     {
         Task InformNewOrderToMix(OrderRequest o);
         Task InformNewOrderToBake(MixedOrder o);

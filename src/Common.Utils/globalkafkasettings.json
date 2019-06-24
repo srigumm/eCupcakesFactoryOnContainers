@@ -1,0 +1,25 @@
+{
+    "producer":{
+        "bootstrapservers":"your bootstrap servers here",
+        "brokerversionfallback":"0.10.0.0",
+        "apiversionfallbackms":"0",
+        "saslmechanism":"PLAIN",
+        "securityprotocol":"SaslSsl",
+        "sslcalocation":"/usr/local/etc/openssl/cert.pem",
+        "saslusername":"your confluent cloud username here",
+        "saslpassword":"your confluent cloud password here"
+      },
+      "consumer":{
+        "bootstrapservers":"your boostrap servers here",
+        "groupid":"tribalscale-boston",
+        "enableautocommit" : true,
+        "autooffsetreset":0,
+        "brokerversionfallback":"0.10.0.0",
+        "apiversionfallbackms":"0",
+        "saslmechanism":"PLAIN",
+        "securityprotocol":"SaslSsl",
+        "sslcalocation":"/usr/local/etc/openssl/cert.pem",
+        "saslusername":"your confluent cloud username here",
+        "saslpassword":"your confluent cloud password here"
+      }
+}

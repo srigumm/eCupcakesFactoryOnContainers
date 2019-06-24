@@ -1,0 +1,90 @@
+steps:
+  # Step to replace Mavenlink Key (-i short for inplace, s/ sustitution command, regex )
+  # - name: "gcr.io/cloud-builders/gcloud"
+  #   id: Generate substitutions
+  #   entrypoint: /bin/sh
+  #   args:
+  #     - "-c"
+  #     - |
+  #       sed -i "s/KAFKA_CONNECTION_STRING/${_KAFKA_CONNECTION_STRING}/g" ./k8s/orderapi-deployment.yml
+
+  # Deploy all the latest changes out to our target Kubernetes cluster
+  - name: "gcr.io/cloud-builders/kubectl"
+    id: Deploy
+    args:
+      - "apply"
+      - "-f"
+      - "./k8s/"
+    env:
+      - "CLOUDSDK_COMPUTE_ZONE=us-central1-b"
+      - "CLOUDSDK_CONTAINER_CLUSTER=ecupcakes-cluster-${_DEPLOY_ENV}"
+
+  # Checkout back to clean state
+  - name: "gcr.io/cloud-builders/git"
+    id: Checkout back to clean state
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        git checkout .
+
+  # Decrypt an ssh key from the Google KMS in order to perform GitHub operations
+  - name: "gcr.io/cloud-builders/gcloud"
+    id: Decrypt GitHub deploy key
+    args:
+      - kms
+      - decrypt
+      - --ciphertext-file=./ci/.ssh/github-deploy-key.enc
+      - --plaintext-file=/root/.ssh/id_rsa
+      - --location=global
+      - --keyring=ecupcakes-keyring
+      - --key=github-deploy-key
+    volumes:
+      - name: "ssh"
+        path: /root/.ssh
+
+  # Copy the decrypted ssh key into /root/.ssh so that git can use it
+  - name: "gcr.io/cloud-builders/git"
+    id: Setup git with GitHub deploy key
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        chmod 600 /root/.ssh/id_rsa
+        cat <<EOF >/root/.ssh/config
+        Hostname github.com
+        IdentityFile /root/.ssh/id_rsa
+        EOF
+        cp ./ci/.ssh/known_hosts /root/.ssh/known_hosts
+    volumes:
+      - name: "ssh"
+        path: /root/.ssh
+
+  # This step copies the applied manifest to the production branch
+  - name: "gcr.io/cloud-builders/git"
+    id: Copy to environment git branch
+    entrypoint: /bin/sh
+    args:
+      - "-c"
+      - |
+        set -x && \
+        # Configure Git to create commits with Cloud Build's service account
+        git config user.email $(gcloud auth list --filter=status:ACTIVE --format='value(account)') && \
+        # Switch to the target environment branch,
+        # copy the Kubernetes config from the candidate branch,
+        # and commit the kubernetes config
+        git fetch origin ${_DEPLOY_ENV} && \
+        git checkout ${_DEPLOY_ENV} && \
+        git checkout $COMMIT_SHA -- k8s/ && \
+        git commit -m "chore: 🤖 update with manifest from commit $COMMIT_SHA
+        $(git log --format=%B -n 1 $COMMIT_SHA)" && \
+        # Push the changes back to Cloud Source Repository
+        git remote add github git@github.com:sgummadidala/eCupcakesFactoryOnContainers.git && \
+        git push github ${_DEPLOY_ENV}
+    volumes:
+      - name: "ssh"
+        path: /root/.ssh
+
+substitutions:
+  _DEPLOY_ENV: dev # Specifies the environment which we wish to deploy to. If it isn't provided, dev will do!
+  _KAFKA_CONNECTION_STRING: CloudBuildNone # API Key

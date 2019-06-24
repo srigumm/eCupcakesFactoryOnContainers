@@ -3,17 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "src\Api\Api.csproj", "{C2BB33BF-4D60-4171-9704-0D0AEC9CCBCD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "Api\Api.csproj", "{C2BB33BF-4D60-4171-9704-0D0AEC9CCBCD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MixingService", "src\Services\Service.Mixing\MixingService.csproj", "{4EC4F768-804F-404B-8821-5DD5EB80F79F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MixingService", "Services\Service.Mixing\MixingService.csproj", "{4EC4F768-804F-404B-8821-5DD5EB80F79F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecoratorService", "src\Services\Service.Decorating\DecoratorService.csproj", "{71AD6822-F0ED-43BA-86F1-C10255B3799D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecoratorService", "Services\Service.Decorating\DecoratorService.csproj", "{71AD6822-F0ED-43BA-86F1-C10255B3799D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BakingService", "src\Services\Service.Baking\BakingService.csproj", "{7EDCA173-1785-4C2F-AA1F-34F454F74693}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BakingService", "Services\Service.Baking\BakingService.csproj", "{7EDCA173-1785-4C2F-AA1F-34F454F74693}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoxingService", "src\Services\Service.Packaging\BoxingService.csproj", "{6C98E930-69A7-4E5F-8DA6-8C5B8BDE2150}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoxingService", "Services\Service.Packaging\BoxingService.csproj", "{6C98E930-69A7-4E5F-8DA6-8C5B8BDE2150}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Utils", "src\Common.Utils\Common.Utils.csproj", "{7D05453C-1A40-4A89-A660-CAD2CB7A0EA0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Utils", "Common.Utils\Common.Utils.csproj", "{7D05453C-1A40-4A89-A660-CAD2CB7A0EA0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "signalr-proxy-kafka", "signalr-proxy-kafka\signalr-proxy-kafka.csproj", "{C6AA47B6-1C0E-4433-B0A5-069F8BD9849B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -100,5 +102,17 @@ Global
 		{7D05453C-1A40-4A89-A660-CAD2CB7A0EA0}.Release|x64.Build.0 = Release|Any CPU
 		{7D05453C-1A40-4A89-A660-CAD2CB7A0EA0}.Release|x86.ActiveCfg = Release|Any CPU
 		{7D05453C-1A40-4A89-A660-CAD2CB7A0EA0}.Release|x86.Build.0 = Release|Any CPU
+		{C6AA47B6-1C0E-4433-B0A5-069F8BD9849B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6AA47B6-1C0E-4433-B0A5-069F8BD9849B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6AA47B6-1C0E-4433-B0A5-069F8BD9849B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C6AA47B6-1C0E-4433-B0A5-069F8BD9849B}.Debug|x64.Build.0 = Debug|Any CPU
+		{C6AA47B6-1C0E-4433-B0A5-069F8BD9849B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C6AA47B6-1C0E-4433-B0A5-069F8BD9849B}.Debug|x86.Build.0 = Debug|Any CPU
+		{C6AA47B6-1C0E-4433-B0A5-069F8BD9849B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6AA47B6-1C0E-4433-B0A5-069F8BD9849B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6AA47B6-1C0E-4433-B0A5-069F8BD9849B}.Release|x64.ActiveCfg = Release|Any CPU
+		{C6AA47B6-1C0E-4433-B0A5-069F8BD9849B}.Release|x64.Build.0 = Release|Any CPU
+		{C6AA47B6-1C0E-4433-B0A5-069F8BD9849B}.Release|x86.ActiveCfg = Release|Any CPU
+		{C6AA47B6-1C0E-4433-B0A5-069F8BD9849B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

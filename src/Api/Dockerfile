@@ -6,6 +6,7 @@ FROM mcr.microsoft.com/dotnet/core/sdk:2.2 AS build
 WORKDIR /src
 
 COPY src/Common.Utils/ /src/Common.Utils/
+COPY src/signalr-proxy-kafka/ /src/signalr-proxy-kafka/
 COPY src/Api/Api.csproj /src/OrderMicroService/
 
 RUN dotnet restore /src/OrderMicroService/Api.csproj
@@ -22,6 +23,12 @@ RUN dotnet publish ./Api.csproj -c Release -o /app
 #WORKDIR /src/src/Services/Ordering/Ordering.UnitTests
 
 FROM base AS final
+
+RUN mkdir -p /usr/local/etc/openssl
+RUN cd /usr/local/etc/openssl
+WORKDIR /usr/local/etc/openssl
+RUN curl https://curl.haxx.se/ca/cacert.pem -o cert.pem
+
 WORKDIR /app
 COPY --from=publish /app .
 ENTRYPOINT ["dotnet", "Api.dll"]

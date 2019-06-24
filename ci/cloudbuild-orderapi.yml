@@ -1,0 +1,138 @@
+steps:
+  # Build the ecupcakes-container-orderapi docker image
+  - name: "gcr.io/cloud-builders/docker"
+    id: Build
+    args:
+      [
+        "build",
+        "--no-cache",
+        "-t",
+        "gcr.io/$PROJECT_ID/ecupcakes-container-orderapi:$SHORT_SHA",
+        "-f",
+        "./src/Api/Dockerfile",
+        "./",
+      ]
+    timeout: 180s
+
+  # Push the ecupcakes-container-orderapi docker image to the container registry
+  - name: "gcr.io/cloud-builders/docker"
+    id: Push
+    args: ["push", "gcr.io/$PROJECT_ID/ecupcakes-container-orderapi:$SHORT_SHA"]
+
+  # Decrypt an ssh key from the Google KMS in order to perform GitHub operations
+  - name: "gcr.io/cloud-builders/gcloud"
+    id: Decrypt GitHub deploy key
+    args:
+      - kms
+      - decrypt
+      - --ciphertext-file=./ci/.ssh/github-deploy-key.enc
+      - --plaintext-file=/root/.ssh/id_rsa
+      - --location=global
+      - --keyring=ecupcakes-keyring
+      - --key=github-deploy-key
+    volumes:
+      - name: "ssh"
+        path: /root/.ssh
+
+  # Copy the decrypted ssh key into /root/.ssh so that git can use it
+  - name: "gcr.io/cloud-builders/git"
+    id: Setup git with GitHub deploy key
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        chmod 600 /root/.ssh/id_rsa
+        cat <<EOF >/root/.ssh/config
+        Hostname github.com
+        IdentityFile /root/.ssh/id_rsa
+        EOF
+        cp ./ci/.ssh/known_hosts /root/.ssh/known_hosts
+    volumes:
+      - name: "ssh"
+        path: /root/.ssh
+
+  # Clone the GitHub repo into a staging area to perform deployment-related operations
+  # We're using the same GitHub repo that our source is in today, but we could later
+  # move this to a different git repo if necessary
+  - name: "gcr.io/cloud-builders/gcloud"
+    id: Clone env repository
+    entrypoint: /bin/sh
+    args:
+      - "-c"
+      - |
+        mkdir deploy-env && \
+        git clone git@github.com:sgummadidala/eCupcakesFactoryOnContainers.git deploy-env && \
+        cd deploy-env && \
+        git checkout candidate_${_DEPLOY_ENV} && \
+        git config user.email $(gcloud auth list --filter=status:ACTIVE --format='value(account)')
+    volumes:
+      - name: "ssh"
+        path: /root/.ssh
+
+  # Set up our orderapi Kubernetes deployment so that it deploys our freshly-built
+  # docker image.
+  - name: "gcr.io/cloud-builders/gcloud"
+    id: Generate deployment manifest and replace evn vars
+    entrypoint: /bin/sh
+    args:
+      - "-c"
+      - |
+        sed "s/GOOGLE_CLOUD_PROJECT/${PROJECT_ID}/g" ./k8s/orderapi-deployment.yml.tpl | \
+        sed "s/ORDERAPI_RUNTIME_ENVIRONMENT/${_ORDERAPI_RUNTIME_ENVIRONMENT}/g" | \
+        sed "s/ORDERAPI_DOCKER_VERSION/${SHORT_SHA}/g" > ./deploy-env/k8s/orderapi-deployment.yml
+
+  # Copy the service manifest
+  - name: "gcr.io/cloud-builders/gcloud"
+    id: Generate service manifest
+    entrypoint: /bin/sh
+    args:
+      - "-c"
+      - |
+        cp ./k8s/orderapi-service.yml ./deploy-env/k8s/orderapi-service.yml
+
+  # Set up the Kubernetes ingress to expose the correct environment to which we wish to deploy
+  - name: "gcr.io/cloud-builders/gcloud"
+    id: Generate ingress manifest
+    entrypoint: /bin/sh
+    args:
+      - "-c"
+      - |
+        sed "s/DEPLOYMENT_ENV/${_DEPLOY_ENV}/g" ./k8s/ingress.yml.tpl > \
+        ./deploy-env/k8s/ingress.yml
+
+  # Our delivery pipeline also needs access to the same ci scripts, so let's
+  # copy them from the source over to our staging area
+  - name: "gcr.io/cloud-builders/gcloud"
+    id: Copy ci directory
+    entrypoint: /bin/sh
+    args:
+      - "-c"
+      - |
+        cp -r ./ci ./deploy-env
+
+  # Finally, push the Kubernetes config and the ci scripts out to a
+  # candidate deployment branch for our target environment
+  - name: "gcr.io/cloud-builders/gcloud"
+    id: Push manifests OrderAPI
+    entrypoint: /bin/sh
+    args:
+      - "-c"
+      - |
+        set -x && \
+        cd deploy-env && \
+        # ConfigureGit to create commits with Cloud Build's service account
+        git config user.email $(gcloud auth list --filter=status:ACTIVE --format='value(account)') && \
+        # Commit and push the Kubernetes config and ci scripts to a candidate
+        # deployment branch for our target environment
+        git add ./k8s ./ci && \
+        git commit -m "chore: 🤖 update k8s to deploy image gcr.io/${PROJECT_ID}/ecupcakes-container-orderapi:${SHORT_SHA}
+        Built from commit ${COMMIT_SHA}
+        Author: $(git log --format='%an <%ae>' -n 1 $COMMIT_SHA)" && \
+        git push origin HEAD:candidate_${_DEPLOY_ENV}
+    volumes:
+      - name: "ssh"
+        path: /root/.ssh
+
+substitutions:
+  _DEPLOY_ENV: dev # Specifies the environment which we wish to deploy to. If it isn't provided, dev will do!
+  _ORDERAPI_RUNTIME_ENVIRONMENT: Development # Specifies the environment that will be passed to the docker container.

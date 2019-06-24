@@ -6,21 +6,21 @@ namespace SignalRDemo.Hubs
     public class SignalRKafkaProxy{
 
         private static List<SignalRClient> _clients;
-        private static Dictionary<string,Consumer<string,string>> _consumers;
+        private static Dictionary<string,IConsumer<string,string>> _consumers;
 
         static SignalRKafkaProxy(){
             _clients = new List<SignalRClient>();
-            _consumers = new Dictionary<string, Consumer<string, string>>();
+            _consumers = new Dictionary<string, IConsumer<string, string>>();
         }
         public static void AddClient(SignalRClient client){
             _clients.Add(client);
         }
 
-        public static void AddConsumer(string connectionId,Consumer<string,string> consumerConnection){
+        public static void AddConsumer(string connectionId,IConsumer<string,string> consumerConnection){
             _consumers.Add(connectionId,consumerConnection);
         }
 
-        public static Dictionary<string,Consumer<string,string>> AllConsumers{
+        public static Dictionary<string,IConsumer<string,string>> AllConsumers{
             get{
                 return _consumers;
             }

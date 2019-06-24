@@ -19,7 +19,12 @@ namespace Api
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            var builder = new ConfigurationBuilder()
+            .AddConfiguration(configuration)
+            .AddJsonFile("globalkafkasettings.json")
+            .AddEnvironmentVariables();
+            Configuration = builder.Build();
+
         }
 
         public IConfiguration Configuration { get; }
@@ -38,12 +43,27 @@ namespace Api
                     c.AddPolicy("AllowOrigin", options => options.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
                 });
             
-            var producerConfig = new ProducerConfig();
             var consumerConfig = new ConsumerConfig();
-            Configuration.Bind("producer",producerConfig);
             Configuration.Bind("consumer",consumerConfig);
 
-            services.AddSingleton<ProducerConfig>(producerConfig);
+
+            //TODO::Clean this code 
+            //Reading the environment variable.
+            var envBootStrapServers = Configuration.GetValue<string>("ENV_KAFKA_CLUSTER");
+            if(!String.IsNullOrEmpty(envBootStrapServers)){
+                consumerConfig.BootstrapServers =  envBootStrapServers;
+            }
+
+            var envSaslUserName = Configuration.GetValue<string>("ENV_KAFKA_USER_NAME");
+            if(!String.IsNullOrEmpty(envSaslUserName)){
+                consumerConfig.SaslUsername =  envSaslUserName;
+            }
+
+            var envSaslPassword = Configuration.GetValue<string>("ENV_KAFKA_USER_PASSWORD");
+            if(!String.IsNullOrEmpty(envSaslPassword)){
+                consumerConfig.SaslPassword =  envSaslPassword;
+            }
+
             services.AddSingleton<ConsumerConfig>(consumerConfig);
         }
 
