@@ -43,7 +43,7 @@ namespace Api
             _configuration.Bind("producer",producerConfig);
 
 
-            //Reading the environment variable.
+            //TODO::Reading the environment variable.
             var envBootStrapServers = _configuration.GetValue<string>("ENV_KAFKA_CLUSTER");
             if(!String.IsNullOrEmpty(envBootStrapServers)){
                 producerConfig.BootstrapServers =  envBootStrapServers;
@@ -76,7 +76,6 @@ namespace Api
                 app.UseHsts();
             }
             app.UseCors("AllowOrigin");
-            //app.UseHttpsRedirection();
             app.UseMvc();
         }
     }

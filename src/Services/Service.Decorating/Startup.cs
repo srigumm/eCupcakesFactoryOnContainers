@@ -76,7 +76,6 @@ namespace Api
                 app.UseHsts();
             }
             app.UseCors("AllowOrigin");
-            //app.UseHttpsRedirection();
             app.UseMvc();
             app.UseSignalR(routes =>
             {

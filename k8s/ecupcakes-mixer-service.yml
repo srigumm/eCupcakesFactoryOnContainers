@@ -1,13 +1,12 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: ecupcakes-orderapi-service
+  name: ecupcakes-mixer-service
 spec:
   selector:
-    app: ecupcakes-orderapi-deployment
-  type: NodePort
+    app: ecupcakes-mixer-deployment
+  type: LoadBalancer
   ports:
   - protocol: TCP
-    nodePort: 32131
     port: 80
     targetPort: 5000

@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: ecupcakes-ecupcakes-ui
+spec:
+  selector:
+    app: ecupcakes-ecupackesui-deployment
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3000

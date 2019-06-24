@@ -1,5 +1,5 @@
 steps:
-  # Build the ecupcakes-container-orderapi docker image
+  # Build the ecupcakes-container-cupcakesui docker image
   - name: "gcr.io/cloud-builders/docker"
     id: Build
     args:
@@ -7,17 +7,17 @@ steps:
         "build",
         "--no-cache",
         "-t",
-        "gcr.io/$PROJECT_ID/ecupcakes-container-orderapi:$SHORT_SHA",
+        "gcr.io/$PROJECT_ID/ecupcakes-container-ecupcakesui:$SHORT_SHA",
         "-f",
-        "./src/Api/Dockerfile",
+        "./src/React-web-ui/Dockerfile",
         "./",
       ]
     timeout: 180s
 
-  # Push the ecupcakes-container-orderapi docker image to the container registry
+  # Push the ecupcakes-container-cupcakesui docker image to the container registry
   - name: "gcr.io/cloud-builders/docker"
     id: Push
-    args: ["push", "gcr.io/$PROJECT_ID/ecupcakes-container-orderapi:$SHORT_SHA"]
+    args: ["push", "gcr.io/$PROJECT_ID/ecupcakes-container-ecupcakesui:$SHORT_SHA"]
 
   # Decrypt an ssh key from the Google KMS in order to perform GitHub operations
   - name: "gcr.io/cloud-builders/gcloud"
@@ -77,12 +77,9 @@ steps:
     args:
       - "-c"
       - |
-        sed "s/GOOGLE_CLOUD_PROJECT/${PROJECT_ID}/g" ./k8s/templates/ecupcakes-orderapi-deployment.yml.tpl | \
-        sed "s/_ENV_KAFKA_CLUSTER/${_ENV_KAFKA_CLUSTER}/g" | \
-        sed "s/_ENV_KAFKA_USER_PASSWORD/${_ENV_KAFKA_USER_PASSWORD}/g"  | \
-        sed "s/_ENV_KAFKA_USER_NAME/${_ENV_KAFKA_USER_NAME}/g"  | \
+        sed "s/GOOGLE_CLOUD_PROJECT/${PROJECT_ID}/g" | \
         sed "s/ORDERAPI_RUNTIME_ENVIRONMENT/${_ORDERAPI_RUNTIME_ENVIRONMENT}/g" | \
-        sed "s/ORDERAPI_DOCKER_VERSION/${SHORT_SHA}/g" > ./deploy-env/k8s/ecupcakes-orderapi-deployment.yml
+        sed "s/ORDERAPI_DOCKER_VERSION/${SHORT_SHA}/g" > ./deploy-env/k8s/ecupcakes-reactui-deployment.yml
 
   # Copy the service manifest
   - name: "gcr.io/cloud-builders/gcloud"
@@ -91,7 +88,7 @@ steps:
     args:
       - "-c"
       - |
-        cp ./k8s/ecupcakes-orderapi-service.yml ./deploy-env/k8s/ecupcakes-orderapi-service.yml
+        cp ./k8s/ecupcakes-reactui-web.yml ./deploy-env/k8s/ecupcakes-reactui-web.yml
 
   # Our delivery pipeline also needs access to the same ci scripts, so let's
   # copy them from the source over to our staging area
@@ -106,7 +103,7 @@ steps:
   # Finally, push the Kubernetes config and the ci scripts out to a
   # candidate deployment branch for our target environment
   - name: "gcr.io/cloud-builders/gcloud"
-    id: Push manifests OrderAPI
+    id: Push manifests reactui
     entrypoint: /bin/sh
     args:
       - "-c"
@@ -118,7 +115,7 @@ steps:
         # Commit and push the Kubernetes config and ci scripts to a candidate
         # deployment branch for our target environment
         git add ./k8s ./ci && \
-        git commit -m "chore: 🤖 update k8s to deploy image gcr.io/${PROJECT_ID}/ecupcakes-container-orderapi:${SHORT_SHA}
+        git commit -m "chore: 🤖 update k8s to deploy image gcr.io/${PROJECT_ID}/ecupcakes-container-ecupcakesui:${SHORT_SHA}
         Built from commit ${COMMIT_SHA}
         Author: $(git log --format='%an <%ae>' -n 1 $COMMIT_SHA)" && \
         git push origin HEAD:candidate_${_DEPLOY_ENV}

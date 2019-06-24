@@ -32,10 +32,6 @@ namespace Api.BackgroundServices
         {
             Console.WriteLine($"Mix service is running at: {DateTime.Now}");
 
-            //Get All active signalR connections 
-           // var allConnections = new Dictionary<string,Consumer<string,string>>();
-            
-
             while (!stoppingToken.IsCancellationRequested)
             {
                 var allConnections = new Dictionary<string,IConsumer<string,string>>(SignalRKafkaProxy.AllConsumers);

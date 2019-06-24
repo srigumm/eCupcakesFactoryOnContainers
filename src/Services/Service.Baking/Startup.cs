@@ -47,7 +47,6 @@ namespace Api
             Configuration.Bind("consumer",consumerConfig);
 
 
-            //TODO::Clean this code 
             //Reading the environment variable.
             var envBootStrapServers = Configuration.GetValue<string>("ENV_KAFKA_CLUSTER");
             if(!String.IsNullOrEmpty(envBootStrapServers)){
