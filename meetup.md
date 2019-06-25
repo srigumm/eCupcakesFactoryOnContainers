@@ -1,12 +1,5 @@
 ## Presenter Info
 
-### Bill Scott
-
-* [Twitter](https://twitter.com/BillScottCoder)
-* [GitHub](https://github.com/billscottboston)
-* [LinkedIn](https://www.linkedin.com/in/bill-scott-boston/)
-* [Medium](https://medium.com/@bill.scott.boston)
-
 ### Srini Gummadidala
 
 * [Twitter](https://twitter.com/srigumm)
@@ -14,19 +7,18 @@
 * [LinkedIn](https://www.linkedin.com/in/srigumm/)
 * [Medium](https://medium.com/@sgummadidala)
 
-### Sandeep Anantha
-
-* [Twitter](https://twitter.com/sandeep_anantha)
-* [LinkedIn](https://www.linkedin.com/in/sandeep-anantha-904b8737/)
-* [Medium](https://medium.com/@sandeep.anantha)
-
-
 ### Jacob Zweifel
 
 * [Twitter](https://twitter.com/jacob_zweifel)
 * [GitHub](https://github.com/jzweifel)
 * [LinkedIn](https://www.linkedin.com/in/jzweifel/)
 * [Medium](https://medium.com/@jzweifel)
+
+## Kafka Resources
+
+* [Kafka: The Definitive Guide](https://www.confluent.io/resources/kafka-the-definitive-guide/)
+* [Apache Kafka](https://kafka.apache.org/)
+* [Kafka Waffle Stack](https://github.com/TribalScale/kafka-waffle-stack)
 
 ## About TribalScale
 
