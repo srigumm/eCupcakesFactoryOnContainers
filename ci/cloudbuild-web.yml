@@ -77,7 +77,7 @@ steps:
     args:
       - "-c"
       - |
-        sed "s/GOOGLE_CLOUD_PROJECT/${PROJECT_ID}/g" | \
+        sed "s/GOOGLE_CLOUD_PROJECT/${PROJECT_ID}/g" ./k8s/templates/ecupcakes-reactui-deployment.yml.tpl | \
         sed "s/ORDERAPI_RUNTIME_ENVIRONMENT/${_ORDERAPI_RUNTIME_ENVIRONMENT}/g" | \
         sed "s/ORDERAPI_DOCKER_VERSION/${SHORT_SHA}/g" > ./deploy-env/k8s/ecupcakes-reactui-deployment.yml
 

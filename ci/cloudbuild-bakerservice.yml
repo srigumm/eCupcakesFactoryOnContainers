@@ -9,7 +9,7 @@ steps:
         "-t",
         "gcr.io/$PROJECT_ID/ecupcakes-container-baker:$SHORT_SHA",
         "-f",
-        "./src/Api/Dockerfile",
+        "./src/Services/Service.Baking/Dockerfile",
         "./",
       ]
     timeout: 180s

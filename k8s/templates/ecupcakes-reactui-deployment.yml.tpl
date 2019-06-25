@@ -17,14 +17,6 @@ spec:
         env:
         - name: ASPNETCORE_ENVIRONMENT
           value: ORDERAPI_RUNTIME_ENVIRONMENT
-        - name: SERVICE_MIX
-          value: _SERVICE_MIX
-        - name: SERVICE_BAKE
-          value: _SERVICE_BAKE
-        - name: SERVICE_DECORATE
-          value: _SERVICE_DECORATE
-        - name: SERVICE_PACKAGE
-          value: _SERVICE_PACKAGE
         ports:
         - name: ecupackesui
           containerPort: 3000

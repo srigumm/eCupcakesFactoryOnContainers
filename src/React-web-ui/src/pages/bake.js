@@ -17,7 +17,7 @@ class Bake extends Component {
 
     componentDidMount = () => {
         const hubConnection = new SignalR.HubConnectionBuilder()
-            .withUrl("http://localhost:5002/ordermonitorhub?consumergroup=bostonbeach&topic=readytobake")
+            .withUrl("http://35.224.134.59/ordermonitorhub?consumergroup=bostonbeach")
             .configureLogging(SignalR.LogLevel.Information)
             .build();
         

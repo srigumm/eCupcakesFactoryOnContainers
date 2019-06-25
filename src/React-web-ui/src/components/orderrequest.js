@@ -48,12 +48,14 @@ export class OrderRequest extends Component {
             Flavour: 0,
             Size: 0,
             Quanity:0
-        }
+        },
+        SubmissionStatusMessage: ""
     };
   }
 
   handleSubmitClick() {
     this.props.submitOrder(this.state.OrderDetail);
+    this.setState(prevState => ( {"SubmissionStatusMessage":"we recieved your order"}));
   }
 
   handleCupCakeFlavourChange(flavour) {
@@ -62,7 +64,8 @@ export class OrderRequest extends Component {
         "OrderDetail": {
             ...prevState.OrderDetail,
             "Flavour": flavour
-        }
+        },
+        "SubmissionStatusMessage":"" //clear submission status message.
     }));
   }
 
@@ -71,7 +74,8 @@ export class OrderRequest extends Component {
         "OrderDetail": {
             ...prevState.OrderDetail,
             "Size": size
-        }
+        },
+        "SubmissionStatusMessage":"" 
     }));
   }
 
@@ -80,7 +84,8 @@ export class OrderRequest extends Component {
         "OrderDetail": {
             ...prevState.OrderDetail,
             "Quantity": quantity
-        }
+        },
+        "SubmissionStatusMessage":"" 
     }));
   }
 
@@ -165,6 +170,9 @@ export class OrderRequest extends Component {
             Order
           </Button>
         </CardActions>
+        <CardContent>
+        <InputLabel >{this.state.SubmissionStatusMessage}</InputLabel>
+        </CardContent>
       </Card>
     );
   }

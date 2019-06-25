@@ -9,7 +9,7 @@ steps:
         "-t",
         "gcr.io/$PROJECT_ID/ecupcakes-container-mixer:$SHORT_SHA",
         "-f",
-        "./src/Api/Dockerfile",
+        "./src/Services/Service.Mixing/Dockerfile",
         "./",
       ]
     timeout: 180s
