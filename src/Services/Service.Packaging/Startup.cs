@@ -39,7 +39,7 @@ namespace Api
 
             services.AddCors(c =>
                 {
-                    c.AddPolicy("AllowOrigin", options => options.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+                    c.AddPolicy("AllowOrigin", options => options.WithOrigins("http://localhost:3000","http://35.232.19.14","https://35.232.19.14").AllowAnyMethod().AllowAnyHeader().AllowCredentials());
                 });
             
             var consumerConfig = new ConsumerConfig();
@@ -77,7 +77,6 @@ namespace Api
                 app.UseHsts();
             }
             app.UseCors("AllowOrigin");
-            //app.UseHttpsRedirection();
             app.UseMvc();
             app.UseSignalR(routes =>
             {

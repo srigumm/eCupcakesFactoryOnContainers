@@ -17,7 +17,7 @@ class Package extends Component {
 
     componentDidMount = () => {
         const hubConnection = new SignalR.HubConnectionBuilder()
-            .withUrl("http://localhost:5004/ordermonitorhub?consumergroup=bostonbeach&topic=readytobox")
+            .withUrl("http://localhost:5004/ordermonitorhub?consumergroup=bostonbeach")
             .configureLogging(SignalR.LogLevel.Information)
             .build();
         
@@ -77,7 +77,7 @@ class Package extends Component {
                 {this.state.messages.length ? <b>New orders to be baked: <b style={{"fontSize":"50px"}}> {this.state.messages.length}</b></b> :""}
                 <br/>
                 {this.state.messages.length ? 
-                        <DisplayOrders list={this.state.messages} submitOrder={this.handleBoxedOrderClick} reportFailure = {this.handleFailureOrderClick} process="Decorate" /> : "No new orders"}
+                        <DisplayOrders list={this.state.messages} submitOrder={this.handleBoxedOrderClick} reportFailure = {this.handleFailureOrderClick} process="Package" /> : "No new orders"}
             </div>
         );
     }

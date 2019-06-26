@@ -5,7 +5,6 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
 import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
 import TextField from '@material-ui/core/TextField';
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -48,12 +47,14 @@ export class OrderRequest extends Component {
             Flavour: 0,
             Size: 0,
             Quanity:0
-        }
+        },
+        SubmissionStatusMessage: ""
     };
   }
 
   handleSubmitClick() {
     this.props.submitOrder(this.state.OrderDetail);
+    this.setState(prevState => ( {"SubmissionStatusMessage":"we recieved your order"}));
   }
 
   handleCupCakeFlavourChange(flavour) {
@@ -62,7 +63,8 @@ export class OrderRequest extends Component {
         "OrderDetail": {
             ...prevState.OrderDetail,
             "Flavour": flavour
-        }
+        },
+        "SubmissionStatusMessage":"" //clear submission status message.
     }));
   }
 
@@ -71,7 +73,8 @@ export class OrderRequest extends Component {
         "OrderDetail": {
             ...prevState.OrderDetail,
             "Size": size
-        }
+        },
+        "SubmissionStatusMessage":"" 
     }));
   }
 
@@ -80,7 +83,8 @@ export class OrderRequest extends Component {
         "OrderDetail": {
             ...prevState.OrderDetail,
             "Quantity": quantity
-        }
+        },
+        "SubmissionStatusMessage":"" 
     }));
   }
 
@@ -165,6 +169,9 @@ export class OrderRequest extends Component {
             Order
           </Button>
         </CardActions>
+        <CardContent>
+        <InputLabel >{this.state.SubmissionStatusMessage}</InputLabel>
+        </CardContent>
       </Card>
     );
   }

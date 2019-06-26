@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: ecupcakes-mixer-service
+spec:
+  selector:
+    app: ecupcakes-mixer-deployment
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5001

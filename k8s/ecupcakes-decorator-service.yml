@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: ecupcakes-decorator-service
+spec:
+  selector:
+    app: ecupcakes-decorator-deployment
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5003

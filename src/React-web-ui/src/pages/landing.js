@@ -8,7 +8,6 @@ import OrdersToDecorate from "../components/dashboard/decorateprocess";
 import OrdersToBox from "../components/dashboard/packageprocess";
 import OrderRequest from "../components/orderrequest";
 import Grid from '@material-ui/core/Grid';
-// import IconLabelTabs from '../components/IconLabelTabs';
  export const Landing = (props) => {
     return (
         // <div>

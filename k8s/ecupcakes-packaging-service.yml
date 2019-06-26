@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: ecupcakes-packer-service
+spec:
+  selector:
+    app: ecupcakes-packer-deployment
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5004
