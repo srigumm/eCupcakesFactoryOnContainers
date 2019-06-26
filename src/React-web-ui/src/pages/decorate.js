@@ -17,7 +17,7 @@ class Decorate extends Component {
 
     componentDidMount = () => {
         const hubConnection = new SignalR.HubConnectionBuilder()
-            .withUrl("http://35.222.96.210/ordermonitorhub?consumergroup=bostonbeach")
+            .withUrl("http://localhost:5003/ordermonitorhub?consumergroup=bostonbeach")
             .configureLogging(SignalR.LogLevel.Information)
             .build();
         

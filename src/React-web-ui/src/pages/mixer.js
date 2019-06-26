@@ -17,7 +17,7 @@ class Mixer extends Component {
 
     componentDidMount = () => {
         const hubConnection = new SignalR.HubConnectionBuilder()
-            .withUrl("http://35.232.151.63/ordermonitorhub?consumergroup=bostonbeach")
+            .withUrl("http://localhost:5001/ordermonitorhub?consumergroup=bostonbeach")
             .configureLogging(SignalR.LogLevel.Information)
             .build();
         

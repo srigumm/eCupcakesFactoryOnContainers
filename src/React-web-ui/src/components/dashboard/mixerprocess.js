@@ -110,7 +110,7 @@ class OrdersToMixer extends Component {
 
     componentDidMount = () => {
         const hubConnection = new SignalR.HubConnectionBuilder()
-            .withUrl("http://35.232.151.63/ordermonitorhub?consumergroup=bostonbeach1")
+            .withUrl("http://localhost:5001/ordermonitorhub?consumergroup=bostonbeach1")
             .configureLogging(SignalR.LogLevel.Information)
             .build();
         

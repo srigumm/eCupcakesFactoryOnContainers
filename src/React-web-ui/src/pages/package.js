@@ -17,7 +17,7 @@ class Package extends Component {
 
     componentDidMount = () => {
         const hubConnection = new SignalR.HubConnectionBuilder()
-            .withUrl("http://34.67.139.115/ordermonitorhub?consumergroup=bostonbeach")
+            .withUrl("http://localhost:5004/ordermonitorhub?consumergroup=bostonbeach")
             .configureLogging(SignalR.LogLevel.Information)
             .build();
         
