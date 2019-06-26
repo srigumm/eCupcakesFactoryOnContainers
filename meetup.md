@@ -5,7 +5,7 @@
 * [Twitter](https://twitter.com/srigumm)
 * [GitHub](https://github.com/srigumm)
 * [LinkedIn](https://www.linkedin.com/in/srigumm/)
-* [Medium](https://medium.com/@sgummadidala)
+* [Medium](https://medium.com/@srigumm)
 
 ### Jacob Zweifel
 
