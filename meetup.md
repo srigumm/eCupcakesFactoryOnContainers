@@ -14,6 +14,9 @@
 * [LinkedIn](https://www.linkedin.com/in/jzweifel/)
 * [Medium](https://medium.com/@jzweifel)
 
+## Meetup Slides
+* [PDF](./media/CupcakesKafkaNETCore.pdf)
+
 ## Kafka Resources
 
 * [Kafka: The Definitive Guide](https://www.confluent.io/resources/kafka-the-definitive-guide/)
